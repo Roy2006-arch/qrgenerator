@@ -34,5 +34,13 @@ Once Git is available, I will:
 2.  If you are logged in, I can assist in creating the repository `qrgenerator`.
 3.  Otherwise, I will provide you with the terminal commands to link your local project to the new repo.
 
+## Step 4: How to Run the Application
+To run the QR Generator locally, use the following command:
+```powershell
+mvn spring-boot:run
+```
+Once the application starts, you can access the webpage at:
+[http://localhost:8080](http://localhost:8080)
+
 ## Alternative (Manual)
 If you prefer not to install Git, I can guide you through using the "Upload files" feature on the GitHub website, though Git is highly recommended for coding projects.

@@ -151,6 +151,10 @@ body {
     width: 100%;
 }
 
+.tab-content.active {
+    display: block;
+}
+
 /* Tab content active flex */
 .tab-active-flex {
     display: flex !important;

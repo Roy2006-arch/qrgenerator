@@ -1,13 +1,12 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Selectors
-    const navButtons = document.querySelectorAll('.nav-btn');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const generateBtn = document.getElementById('generate-btn');
-    const qrPlaceholder = document.getElementById('qr-placeholder');
-    const qrResult = document.getElementById('qr-result');
-    const qrActions = document.getElementById('qr-actions');
-    const qrCard = document.getElementById('qr-card');
-    const historyList = document.getElementById('history-list');
+// Selectors
+const navButtons = document.querySelectorAll('.nav-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+const generateBtn = document.getElementById('generate-btn');
+const qrPlaceholder = document.getElementById('qr-placeholder');
+const qrResult = document.getElementById('qr-result');
+const qrActions = document.getElementById('qr-actions');
+const qrCard = document.getElementById('qr-card');
+const historyList = document.getElementById('history-list');
 
     // Inputs
     const upiIdInput = document.getElementById('upi-id');
@@ -60,9 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Generate QR
     generateBtn.addEventListener('click', async () => {
         const upiId = upiIdInput.value.trim();
-        const name = nameInput.value.trim() || 'User';
+        const name = nameInput.value.trim();
         const amount = amountInput.value.trim();
-        const note = noteInput.value.trim() || 'Payment';
+        const note = noteInput.value.trim();
 
         if (!upiId || !amount || amount <= 0) {
             showToast('Please enter a valid UPI ID and amount', 'error');
@@ -111,16 +110,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         qrResult.innerHTML = '';
         
-        new QRCode(qrResult, {
-            text: data,
-            width: 300,
-            height: 300,
-            colorDark : "#000000",
-            colorLight : "#ffffff",
-            correctLevel : QRCode.CorrectLevel.H
-        });
+        const img = document.createElement('img');
+        img.src = `/api/generate-qr?amount=${encodeURIComponent(amount)}&upiId=${encodeURIComponent(upiId)}&name=${encodeURIComponent(name)}&note=${encodeURIComponent(note)}`;
+        img.alt = "Generated UPI QR";
         
-        gsap.from("#qr-result canvas, #qr-result img", { scale: 0.2, opacity: 0, duration: 0.8, ease: "elastic.out(1, 0.3)" });
+        qrResult.appendChild(img);
+        
+        gsap.from("#qr-result img", { scale: 0.2, opacity: 0, duration: 0.8, ease: "elastic.out(1, 0.3)" });
         gsap.from(".qr-actions", { opacity: 0, y: 20, stagger: 0.1, delay: 0.5 });
     }
 
@@ -245,15 +241,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Extra Features
-    document.getElementById('download-btn').addEventListener('click', () => {
-        const canvas = qrResult.querySelector('canvas');
-        if (!canvas) return;
+    document.getElementById('download-btn').addEventListener('click', async () => {
+        const img = qrResult.querySelector('img');
+        if (!img) return;
         
-        const link = document.createElement('a');
-        link.href = canvas.toDataURL("image/png");
-        link.download = `NexPay_QR_${Date.now()}.png`;
-        link.click();
-        showToast('Saving to downloads...', 'success');
+        try {
+            const response = await fetch(img.src);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `NexPay_QR_${Date.now()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            showToast('Saving to downloads...', 'success');
+        } catch (error) {
+            console.error('Download failed:', error);
+            showToast('Failed to download QR code', 'error');
+        }
     });
 
     document.getElementById('verify-payment-btn').addEventListener('click', () => {
@@ -290,9 +297,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (savedUpi) upiIdInput.value = savedUpi;
     if (savedName) nameInput.value = savedName;
 
-    // Entry Animations
-    gsap.from(".glass-nav", { y: -100, opacity: 0, duration: 1, ease: "power4.out" });
-    gsap.from(".form-container", { x: -100, opacity: 0, duration: 1.2, delay: 0.3, ease: "power4.out" });
-    gsap.from(".qr-display-container", { x: 100, opacity: 0, duration: 1.2, delay: 0.5, ease: "power4.out" });
+// Entry Animations
+gsap.from(".glass-nav", { y: -100, opacity: 0, duration: 1, ease: "power4.out" });
+gsap.from(".form-container", { x: -100, opacity: 0, duration: 1.2, delay: 0.3, ease: "power4.out" });
+gsap.from(".qr-display-container", { x: 100, opacity: 0, duration: 1.2, delay: 0.5, ease: "power4.out" });
 
-});
+// Initial UI Setup: Trigger the active tab logic after a short delay
+setTimeout(() => {
+    const activeTab = document.querySelector('.nav-btn.active');
+    if (activeTab) {
+        activeTab.click();
+    }
+}, 100);
+

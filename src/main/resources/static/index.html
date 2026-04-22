@@ -11,7 +11,6 @@
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -208,8 +207,18 @@
 
     <script src="script.js"></script>
     <script>
-        // Initialize Lucide icons
+        // Ensure Lucide icons are created
         lucide.createIcons();
+        
+        // Final UI Initialization: Trigger the default active tab
+        // We use a small delay to ensure GSAP and other libraries are fully ready
+        setTimeout(() => {
+            const activeTab = document.querySelector('.nav-btn.active');
+            if (activeTab) {
+                console.log('Auto-clicking initial tab:', activeTab.dataset.tab);
+                activeTab.click();
+            }
+        }, 150);
     </script>
 </body>
 </html>
