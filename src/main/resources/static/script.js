@@ -8,6 +8,11 @@ const qrActions = document.getElementById('qr-actions');
 const qrCard = document.getElementById('qr-card');
 const historyList = document.getElementById('history-list');
 
+// Clear history on fresh start
+localStorage.removeItem('np_history');
+localStorage.removeItem('np_last_upi');
+localStorage.removeItem('np_last_name');
+
     // Inputs
     const upiIdInput = document.getElementById('upi-id');
     const nameInput = document.getElementById('name');
