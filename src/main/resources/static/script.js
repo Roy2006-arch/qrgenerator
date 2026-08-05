@@ -8,11 +8,6 @@ const qrActions = document.getElementById('qr-actions');
 const qrCard = document.getElementById('qr-card');
 const historyList = document.getElementById('history-list');
 
-// Clear history on fresh start
-localStorage.removeItem('np_history');
-localStorage.removeItem('np_last_upi');
-localStorage.removeItem('np_last_name');
-
     // Inputs
     const upiIdInput = document.getElementById('upi-id');
     const nameInput = document.getElementById('name');
@@ -127,18 +122,18 @@ localStorage.removeItem('np_last_name');
 
     // --- HISTORY MGT ---
     function saveToHistory(item) {
-        const history = JSON.parse(localStorage.getItem('np_history') || '[]');
+        const history = JSON.parse(sessionStorage.getItem('np_history') || '[]');
         history.unshift(item);
-        localStorage.setItem('np_history', JSON.stringify(history.slice(0, 20)));
+        sessionStorage.setItem('np_history', JSON.stringify(history.slice(0, 20)));
         
         if (document.getElementById('setting-autosave').checked) {
-            localStorage.setItem('np_last_upi', item.upiId);
-            localStorage.setItem('np_last_name', item.name);
+            sessionStorage.setItem('np_last_upi', item.upiId);
+            sessionStorage.setItem('np_last_name', item.name);
         }
     }
 
     function renderHistory() {
-        const history = JSON.parse(localStorage.getItem('np_history') || '[]');
+        const history = JSON.parse(sessionStorage.getItem('np_history') || '[]');
         if (history.length === 0) {
             historyList.innerHTML = '<div class="empty-state"><i data-lucide="folder-open"></i><p>No history found yet</p></div>';
             lucide.createIcons();
@@ -162,15 +157,15 @@ localStorage.removeItem('np_last_name');
     }
 
     window.deleteItem = (id) => {
-        const history = JSON.parse(localStorage.getItem('np_history') || '[]');
+        const history = JSON.parse(sessionStorage.getItem('np_history') || '[]');
         const filtered = history.filter(item => item.id !== id);
-        localStorage.setItem('np_history', JSON.stringify(filtered));
+        sessionStorage.setItem('np_history', JSON.stringify(filtered));
         renderHistory();
         showToast('Item deleted from history', 'info');
     };
 
     window.reRunHistory = (id) => {
-        const history = JSON.parse(localStorage.getItem('np_history') || '[]');
+        const history = JSON.parse(sessionStorage.getItem('np_history') || '[]');
         const item = history.find(i => i.id === id || i.upiId === id); // fallback search
         if (!item) return;
         
@@ -194,7 +189,7 @@ localStorage.removeItem('np_last_name');
             'Reset All Data?', 
             'This will clear your history, saved UPI ID, and reset all settings. This cannot be undone.', 
             () => {
-                localStorage.clear();
+                sessionStorage.clear();
                 window.location.reload();
             }
         );
@@ -205,7 +200,7 @@ localStorage.removeItem('np_last_name');
             'Clear History?', 
             'Are you sure you want to delete all transaction history?', 
             () => {
-                localStorage.setItem('np_history', '[]');
+                sessionStorage.setItem('np_history', '[]');
                 renderHistory();
                 showToast('History cleared successfully', 'success');
             }
@@ -217,11 +212,11 @@ localStorage.removeItem('np_last_name');
     settings.forEach(key => {
         const el = document.getElementById(`setting-${key}`);
         // Load saved state
-        const saved = localStorage.getItem(`np_setting_${key}`);
+        const saved = sessionStorage.getItem(`np_setting_${key}`);
         if (saved !== null) el.checked = saved === 'true';
 
         el.addEventListener('change', () => {
-            localStorage.setItem(`np_setting_${key}`, el.checked);
+            sessionStorage.setItem(`np_setting_${key}`, el.checked);
             showToast(`Setting updated: ${key}`, 'info');
         });
     });
@@ -297,8 +292,8 @@ localStorage.removeItem('np_last_name');
     }
 
     // Load saved details
-    const savedUpi = localStorage.getItem('np_last_upi');
-    const savedName = localStorage.getItem('np_last_name');
+    const savedUpi = sessionStorage.getItem('np_last_upi');
+    const savedName = sessionStorage.getItem('np_last_name');
     if (savedUpi) upiIdInput.value = savedUpi;
     if (savedName) nameInput.value = savedName;
 

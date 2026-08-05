@@ -205,6 +205,12 @@
 
     <div id="toast" class="toast">QR Generated successfully!</div>
 
+    <script>
+        // Clear all storage on fresh start (immediately on load)
+        // This ensures the app starts fresh every time the page is opened or refreshed
+        sessionStorage.clear();
+        localStorage.clear();
+    </script>
     <script src="script.js"></script>
     <script>
         // Ensure Lucide icons are created
